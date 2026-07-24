@@ -156,12 +156,12 @@ function BlackHoleIntro({ onComplete }) {
   const introVideoRef = useRef(null)
 
   useEffect(() => {
-    const duration = 3200
+    const duration = 3000
     const timer = window.setTimeout(onComplete, duration)
     const introVideo = introVideoRef.current
 
     if (introVideo) {
-      introVideo.playbackRate = 1.35
+      introVideo.playbackRate = 1.2
       introVideo.play().catch(() => {})
     }
 
@@ -202,7 +202,7 @@ function BlackHoleIntro({ onComplete }) {
 
     const render = (time) => {
       const elapsed = time - startTime
-      const progress = Math.min(elapsed / 3000, 1)
+      const progress = Math.min(elapsed / 2800, 1)
       const approach = smoothstep(Math.min(progress / 0.72, 1))
       const plunge = Math.max((progress - 0.72) / 0.28, 0)
       const cameraScale = 0.11 + approach * 0.94 + Math.pow(plunge, 3) * 6.2
@@ -220,9 +220,9 @@ function BlackHoleIntro({ onComplete }) {
         centerY,
         Math.max(width, height) * 0.8,
       )
-      background.addColorStop(0, 'rgba(24, 12, 3, 0.52)')
-      background.addColorStop(0.38, 'rgba(8, 4, 1, 0.48)')
-      background.addColorStop(1, '#010101')
+      background.addColorStop(0, 'rgba(11, 24, 58, 0.62)')
+      background.addColorStop(0.38, 'rgba(5, 8, 28, 0.58)')
+      background.addColorStop(1, '#01030a')
       context.fillStyle = background
       context.fillRect(0, 0, width, height)
 
@@ -239,8 +239,8 @@ function BlackHoleIntro({ onComplete }) {
         context.lineTo(x, y)
         context.lineWidth = star.size * (1 + plunge * 1.4)
         context.strokeStyle = star.warm
-          ? `rgba(255, 183, 92, ${star.alpha})`
-          : `rgba(235, 229, 218, ${star.alpha * 0.68})`
+          ? `rgba(126, 102, 255, ${star.alpha})`
+          : `rgba(125, 224, 255, ${star.alpha * 0.72})`
         context.stroke()
       })
 
@@ -409,9 +409,21 @@ function BlackHoleIntro({ onComplete }) {
         <source src="/media/nasa-black-hole.webm" type="video/webm" />
       </video>
       <div className="intro-vignette" aria-hidden="true" />
+      <div className="intro-grid" aria-hidden="true" />
+
+      <div className="intro-hud" aria-hidden="true">
+        <span className="hud-ring hud-ring-outer" />
+        <span className="hud-ring hud-ring-middle" />
+        <span className="hud-ring hud-ring-inner" />
+        <span className="hud-axis hud-axis-x" />
+        <span className="hud-axis hud-axis-y" />
+        <span className="hud-pulse" />
+      </div>
 
       <div className="intro-brand">
+        <p className="intro-kicker">SYSTEM / 025.7</p>
         <p className="intro-eyebrow">INVARIABLE TECHNOLOGY</p>
+        <p className="intro-signal">QUANTUM GATE SYNCHRONIZED</p>
       </div>
 
       <button type="button" className="intro-skip" onClick={onComplete}>
