@@ -171,6 +171,42 @@ function routeHref(route: RouteKey) {
   return route === 'home' ? '#home' : `#${route}`
 }
 
+function HomeHeader() {
+  return (
+    <header className="relative z-10 px-6 pt-6 md:px-12 lg:px-16">
+      <nav className="liquid-glass flex items-center justify-between rounded-xl px-4 py-2">
+        <a
+          href="#"
+          className="relative z-10 text-lg font-semibold tracking-tight sm:text-xl md:text-2xl"
+          aria-label="因变量科技有限公司首页"
+        >
+          <span className="md:hidden">因变量科技</span>
+          <span className="hidden md:inline">因变量科技有限公司</span>
+        </a>
+
+        <div className="relative z-10 hidden items-center gap-8 md:flex">
+          {navLinks.map((link) => (
+            <a
+              key={link.label}
+              href={routeHref(link.route)}
+              className="text-sm text-white transition-colors hover:text-gray-300"
+            >
+              {link.label}
+            </a>
+          ))}
+        </div>
+
+        <a
+          href="#contact"
+          className="relative z-10 rounded-lg bg-white px-6 py-2 text-sm font-medium text-black transition-colors hover:bg-gray-100"
+        >
+          开始合作
+        </a>
+      </nav>
+    </header>
+  )
+}
+
 function Header({ currentRoute, dark = false }: { currentRoute: RouteKey; dark?: boolean }) {
   return (
     <header className="relative z-30 px-6 pt-6 md:px-12 lg:px-16">
@@ -231,7 +267,7 @@ function HomePage() {
         aria-hidden="true"
       />
 
-      <Header currentRoute="home" />
+      <HomeHeader />
 
       <section className="relative z-10 flex flex-1 flex-col justify-end px-6 pb-12 md:px-12 lg:px-16 lg:pb-16">
         <div className="lg:grid lg:grid-cols-2 lg:items-end">
@@ -241,23 +277,24 @@ function HomePage() {
               className="mb-4 text-4xl text-white md:text-5xl lg:text-6xl xl:text-7xl"
             />
 
-            <FadeIn delay={800}>
+            <FadeIn delay={800} duration={1000}>
               <p className="mb-5 max-w-2xl text-base text-gray-300 md:text-lg">
                 我们携手具有远见的伙伴，以技术、资本与创造力，
                 构建定义下一代商业的创新事业。
               </p>
             </FadeIn>
 
-            <FadeIn delay={1200}>
+            <FadeIn delay={1200} duration={1000}>
               <div className="flex flex-wrap gap-4">
                 <a
-                  href="#contact"
+                  id="contact"
+                  href="#advisory"
                   className="rounded-lg bg-white px-8 py-3 font-medium text-black transition-colors hover:bg-gray-100"
                 >
                   开始合作
                 </a>
                 <a
-                  href="#building"
+                  href="#story"
                   className="liquid-glass rounded-lg border border-white/20 px-8 py-3 font-medium text-white transition-colors hover:bg-white hover:text-black"
                 >
                   <span className="relative z-10">探索业务</span>
@@ -268,9 +305,13 @@ function HomePage() {
 
           <FadeIn
             delay={1400}
+            duration={1000}
             className="mt-8 flex items-end justify-start lg:mt-0 lg:justify-end"
           >
-            <div className="liquid-glass rounded-xl border border-white/20 px-6 py-3">
+            <div
+              id="advisory"
+              className="liquid-glass rounded-xl border border-white/20 px-6 py-3"
+            >
               <p className="relative z-10 text-lg font-light md:text-xl lg:text-2xl">
                 投资 · 共创 · 顾问
               </p>
