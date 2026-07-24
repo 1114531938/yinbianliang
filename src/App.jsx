@@ -153,10 +153,17 @@ function GridLines({ subtle = false }) {
 
 function BlackHoleIntro({ onComplete }) {
   const canvasRef = useRef(null)
+  const introVideoRef = useRef(null)
 
   useEffect(() => {
     const duration = 3200
     const timer = window.setTimeout(onComplete, duration)
+    const introVideo = introVideoRef.current
+
+    if (introVideo) {
+      introVideo.playbackRate = 1.35
+      introVideo.play().catch(() => {})
+    }
 
     const canvas = canvasRef.current
     const context = canvas?.getContext('2d')
@@ -382,16 +389,25 @@ function BlackHoleIntro({ onComplete }) {
       window.clearTimeout(timer)
       window.cancelAnimationFrame(frame)
       window.removeEventListener('resize', resize)
+      introVideo?.pause()
     }
   }, [onComplete])
 
   return (
     <div className="black-hole-intro" role="dialog" aria-label="因变量科技开场动画">
       <canvas ref={canvasRef} className="intro-stars" aria-hidden="true" />
-      <div
-        className="intro-black-hole-image intro-black-hole-far"
+      <video
+        ref={introVideoRef}
+        className="intro-black-hole-video"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
         aria-hidden="true"
-      />
+      >
+        <source src="/media/nasa-black-hole.webm" type="video/webm" />
+      </video>
       <div className="intro-vignette" aria-hidden="true" />
 
       <div className="intro-brand">
@@ -401,6 +417,10 @@ function BlackHoleIntro({ onComplete }) {
       <button type="button" className="intro-skip" onClick={onComplete}>
         跳过动画 <span>↗</span>
       </button>
+
+      <p className="intro-credit">
+        VISUALIZATION: NASA GODDARD / JEREMY SCHNITTMAN
+      </p>
     </div>
   )
 }

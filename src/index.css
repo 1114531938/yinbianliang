@@ -135,24 +135,19 @@ a {
   animation: stars-arrive 1.2s ease-out 0.1s forwards;
 }
 
-.intro-black-hole-image {
+.intro-black-hole-video {
   position: absolute;
-  inset: -2%;
+  inset: 0;
   z-index: 2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   opacity: 0;
-  transform: translateZ(0) scale(0.04);
+  transform: translateZ(0) scale(0.985);
   transform-origin: 50% 50%;
   backface-visibility: hidden;
-  perspective: 1000px;
-  will-change: transform, opacity, filter;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
-
-.intro-black-hole-far {
-  background-image: url('/images/black-hole-cinematic.png');
-  animation: cinematic-far-camera 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  will-change: transform, opacity;
+  animation: intro-video-arrive 3s ease-out forwards;
 }
 
 .intro-vignette {
@@ -324,32 +319,29 @@ a {
   background: rgba(255, 190, 100, 0.05);
 }
 
-@keyframes cinematic-far-camera {
+@keyframes intro-video-arrive {
   0% {
     opacity: 0;
-    transform: translateZ(0) scale(0.08);
-    filter: brightness(0.55) blur(3px);
+    transform: translateZ(0) scale(0.985);
   }
-  15% {
+  18% {
     opacity: 1;
-    transform: translateZ(0) scale(0.16);
-    filter: brightness(0.7) blur(1px);
-  }
-  52% {
-    opacity: 1;
-    transform: translateZ(0) scale(0.62);
-    filter: brightness(0.9) blur(0);
-  }
-  74% {
-    opacity: 1;
-    transform: translateZ(0) scale(0.92);
-    filter: brightness(1) blur(0);
   }
   100% {
     opacity: 1;
-    transform: translateZ(0) scale(1.18);
-    filter: brightness(1.08) blur(0);
+    transform: translateZ(0) scale(1.025);
   }
+}
+
+.intro-credit {
+  position: absolute;
+  bottom: 18px;
+  left: 20px;
+  z-index: 8;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.24);
+  font-size: 7px;
+  letter-spacing: 0.12em;
 }
 
 @keyframes black-hole-arrive {
