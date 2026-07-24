@@ -155,7 +155,7 @@ function BlackHoleIntro({ onComplete }) {
   const canvasRef = useRef(null)
 
   useEffect(() => {
-    const duration = 7600
+    const duration = 3200
     const timer = window.setTimeout(onComplete, duration)
 
     const canvas = canvasRef.current
@@ -195,9 +195,9 @@ function BlackHoleIntro({ onComplete }) {
 
     const render = (time) => {
       const elapsed = time - startTime
-      const progress = Math.min(elapsed / 7400, 1)
-      const approach = smoothstep(Math.min(progress / 0.8, 1))
-      const plunge = Math.max((progress - 0.8) / 0.2, 0)
+      const progress = Math.min(elapsed / 3000, 1)
+      const approach = smoothstep(Math.min(progress / 0.72, 1))
+      const plunge = Math.max((progress - 0.72) / 0.28, 0)
       const cameraScale = 0.11 + approach * 0.94 + Math.pow(plunge, 3) * 6.2
       const centerX = width / 2
       const centerY = height * 0.49
@@ -390,10 +390,6 @@ function BlackHoleIntro({ onComplete }) {
       <canvas ref={canvasRef} className="intro-stars" aria-hidden="true" />
       <div
         className="intro-black-hole-image intro-black-hole-far"
-        aria-hidden="true"
-      />
-      <div
-        className="intro-black-hole-image intro-black-hole-close"
         aria-hidden="true"
       />
       <div className="intro-vignette" aria-hidden="true" />

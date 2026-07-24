@@ -95,6 +95,7 @@ a {
 }
 
 .black-hole-intro {
+  --reveal-radius: 0%;
   position: fixed;
   inset: 0;
   z-index: 100;
@@ -102,7 +103,22 @@ a {
   display: grid;
   place-items: center;
   background: #000;
-  animation: intro-collapse 0.85s cubic-bezier(0.76, 0, 0.24, 1) 6.7s forwards;
+  -webkit-mask-image: radial-gradient(
+    circle at 50% 50%,
+    transparent 0,
+    transparent var(--reveal-radius),
+    #000 calc(var(--reveal-radius) + 5%),
+    #000 100%
+  );
+  mask-image: radial-gradient(
+    circle at 50% 50%,
+    transparent 0,
+    transparent var(--reveal-radius),
+    #000 calc(var(--reveal-radius) + 5%),
+    #000 100%
+  );
+  animation: intro-radial-reveal 1.35s cubic-bezier(0.65, 0, 0.35, 1) 1.65s
+    forwards;
 }
 
 .intro-stars,
@@ -136,12 +152,7 @@ a {
 
 .intro-black-hole-far {
   background-image: url('/images/black-hole-cinematic.png');
-  animation: cinematic-far-camera 7.4s linear forwards;
-}
-
-.intro-black-hole-close {
-  background-image: url('/images/black-hole-close.png');
-  animation: cinematic-close-camera 7.4s linear forwards;
+  animation: cinematic-far-camera 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .intro-vignette {
@@ -267,7 +278,7 @@ a {
   text-align: center;
   opacity: 0;
   filter: blur(8px);
-  animation: brand-focus 1s cubic-bezier(0.16, 1, 0.3, 1) 2.4s forwards;
+  animation: brand-focus 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.65s forwards;
 }
 
 .intro-eyebrow,
@@ -316,71 +327,28 @@ a {
 @keyframes cinematic-far-camera {
   0% {
     opacity: 0;
-    transform: translateZ(0) scale(0.035);
-    filter: brightness(0.5) blur(3px);
+    transform: translateZ(0) scale(0.08);
+    filter: brightness(0.55) blur(3px);
   }
-  8% {
+  15% {
     opacity: 1;
-    transform: translateZ(0) scale(0.07);
-    filter: brightness(0.62) blur(1px);
+    transform: translateZ(0) scale(0.16);
+    filter: brightness(0.7) blur(1px);
   }
-  28% {
+  52% {
     opacity: 1;
-    transform: translateZ(0) scale(0.19);
-    filter: brightness(0.72) blur(0);
+    transform: translateZ(0) scale(0.62);
+    filter: brightness(0.9) blur(0);
   }
-  48% {
+  74% {
     opacity: 1;
-    transform: translateZ(0) scale(0.48);
-    filter: brightness(0.82) blur(0);
-  }
-  63% {
-    opacity: 1;
-    transform: translateZ(0) scale(1.05);
-    filter: brightness(0.94) blur(0);
-  }
-  72% {
-    opacity: 1;
-    transform: translateZ(0) scale(2);
-    filter: brightness(1.06) blur(0);
-  }
-  79% {
-    opacity: 0;
-    transform: translateZ(0) scale(2.38);
-    filter: brightness(1.12) blur(0);
+    transform: translateZ(0) scale(0.92);
+    filter: brightness(1) blur(0);
   }
   100% {
-    opacity: 0;
-    transform: translateZ(0) scale(2.4);
-  }
-}
-
-@keyframes cinematic-close-camera {
-  0%,
-  61% {
-    opacity: 0;
-    transform: translateZ(0) scale(0.9);
-    filter: brightness(0.94) blur(0);
-  }
-  70% {
     opacity: 1;
-    transform: translateZ(0) scale(1);
-    filter: brightness(1.04) blur(0);
-  }
-  84% {
-    opacity: 1;
-    transform: translateZ(0) scale(1.23);
+    transform: translateZ(0) scale(1.18);
     filter: brightness(1.08) blur(0);
-  }
-  92% {
-    opacity: 1;
-    transform: translateZ(0) scale(1.65);
-    filter: brightness(1.16) blur(0.2px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateZ(0) scale(4.2);
-    filter: brightness(1.32) blur(1px);
   }
 }
 
@@ -443,21 +411,18 @@ a {
   }
 }
 
-@keyframes intro-collapse {
-  0% {
-    opacity: 1;
-    filter: brightness(1);
+@property --reveal-radius {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 0%;
+}
+
+@keyframes intro-radial-reveal {
+  from {
+    --reveal-radius: 0%;
   }
-  45% {
-    opacity: 1;
-    filter: brightness(1.8);
-    transform: scale(1.06);
-  }
-  100% {
-    visibility: hidden;
-    opacity: 0;
-    filter: brightness(0);
-    transform: scale(1.7);
+  to {
+    --reveal-radius: 145%;
   }
 }
 
