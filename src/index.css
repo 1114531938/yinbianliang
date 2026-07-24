@@ -102,7 +102,7 @@ a {
   display: grid;
   place-items: center;
   background: #000;
-  animation: intro-collapse 0.8s cubic-bezier(0.76, 0, 0.24, 1) 5.05s forwards;
+  animation: intro-collapse 0.85s cubic-bezier(0.76, 0, 0.24, 1) 6.7s forwards;
 }
 
 .intro-stars,
@@ -123,11 +123,25 @@ a {
   position: absolute;
   inset: -2%;
   z-index: 2;
-  background: url('/images/black-hole-cinematic.png') center center / cover no-repeat;
   opacity: 0;
-  transform: scale(0.07);
+  transform: translateZ(0) scale(0.04);
+  transform-origin: 50% 50%;
+  backface-visibility: hidden;
+  perspective: 1000px;
   will-change: transform, opacity, filter;
-  animation: cinematic-camera-push 5.7s cubic-bezier(0.5, 0, 0.18, 1) forwards;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.intro-black-hole-far {
+  background-image: url('/images/black-hole-cinematic.png');
+  animation: cinematic-far-camera 7.4s linear forwards;
+}
+
+.intro-black-hole-close {
+  background-image: url('/images/black-hole-close.png');
+  animation: cinematic-close-camera 7.4s linear forwards;
 }
 
 .intro-vignette {
@@ -299,35 +313,74 @@ a {
   background: rgba(255, 190, 100, 0.05);
 }
 
-@keyframes cinematic-camera-push {
+@keyframes cinematic-far-camera {
   0% {
     opacity: 0;
-    transform: scale(0.07);
-    filter: brightness(0.45) blur(5px);
+    transform: translateZ(0) scale(0.035);
+    filter: brightness(0.5) blur(3px);
   }
-  12% {
+  8% {
     opacity: 1;
-    filter: brightness(0.68) blur(1px);
+    transform: translateZ(0) scale(0.07);
+    filter: brightness(0.62) blur(1px);
   }
-  42% {
+  28% {
     opacity: 1;
-    transform: scale(0.34);
+    transform: translateZ(0) scale(0.19);
+    filter: brightness(0.72) blur(0);
+  }
+  48% {
+    opacity: 1;
+    transform: translateZ(0) scale(0.48);
     filter: brightness(0.82) blur(0);
   }
-  76% {
+  63% {
     opacity: 1;
-    transform: scale(0.92);
-    filter: brightness(0.96) blur(0);
+    transform: translateZ(0) scale(1.05);
+    filter: brightness(0.94) blur(0);
   }
-  86% {
+  72% {
     opacity: 1;
-    transform: scale(1.08);
+    transform: translateZ(0) scale(2);
+    filter: brightness(1.06) blur(0);
+  }
+  79% {
+    opacity: 0;
+    transform: translateZ(0) scale(2.38);
+    filter: brightness(1.12) blur(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateZ(0) scale(2.4);
+  }
+}
+
+@keyframes cinematic-close-camera {
+  0%,
+  61% {
+    opacity: 0;
+    transform: translateZ(0) scale(0.9);
+    filter: brightness(0.94) blur(0);
+  }
+  70% {
+    opacity: 1;
+    transform: translateZ(0) scale(1);
+    filter: brightness(1.04) blur(0);
+  }
+  84% {
+    opacity: 1;
+    transform: translateZ(0) scale(1.23);
     filter: brightness(1.08) blur(0);
+  }
+  92% {
+    opacity: 1;
+    transform: translateZ(0) scale(1.65);
+    filter: brightness(1.16) blur(0.2px);
   }
   100% {
     opacity: 1;
-    transform: scale(5.8);
-    filter: brightness(1.35) blur(2px);
+    transform: translateZ(0) scale(4.2);
+    filter: brightness(1.32) blur(1px);
   }
 }
 
@@ -424,14 +477,7 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  html {
     scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
-  }
-
-  .black-hole-intro {
-    animation-delay: 0.3s !important;
   }
 }
