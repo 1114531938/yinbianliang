@@ -1,7 +1,7 @@
-# CodeNest Hero
+# 因变量科技有限公司
 
-A high-end, dark-themed landing hero for a coding education platform, built with
-React, Tailwind CSS, hls.js, and Lucide.
+因变量科技有限公司官网。以高端暗色视觉呈现数字产品、AI 智能应用与数据技术服务，
+使用 React、Tailwind CSS、hls.js 和 Lucide 构建。
 
 ## Run locally
 
