@@ -151,6 +151,146 @@ function GridLines({ subtle = false }) {
   )
 }
 
+function BlackHoleIntro({ onComplete }) {
+  const canvasRef = useRef(null)
+
+  useEffect(() => {
+    const reducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches
+    const duration = reducedMotion ? 700 : 4600
+    const timer = window.setTimeout(onComplete, duration)
+
+    if (reducedMotion) {
+      return () => window.clearTimeout(timer)
+    }
+
+    const canvas = canvasRef.current
+    const context = canvas?.getContext('2d')
+    if (!canvas || !context) {
+      return () => window.clearTimeout(timer)
+    }
+
+    let frame
+    let width = window.innerWidth
+    let height = window.innerHeight
+    let particles = []
+    const startTime = performance.now()
+
+    const resize = () => {
+      const ratio = Math.min(window.devicePixelRatio || 1, 2)
+      width = window.innerWidth
+      height = window.innerHeight
+      canvas.width = width * ratio
+      canvas.height = height * ratio
+      canvas.style.width = `${width}px`
+      canvas.style.height = `${height}px`
+      context.setTransform(ratio, 0, 0, ratio, 0, 0)
+
+      const count = Math.min(900, Math.floor((width * height) / 1400))
+      const outerRadius = Math.max(width, height) * 0.72
+      particles = Array.from({ length: count }, (_, index) => ({
+        angle: Math.random() * Math.PI * 2,
+        radius: 80 + Math.pow(Math.random(), 0.55) * outerRadius,
+        speed: 0.0015 + Math.random() * 0.006,
+        size: 0.35 + Math.random() * 1.55,
+        alpha: 0.15 + Math.random() * 0.72,
+        hue: index % 7 === 0 ? 151 : 175 + Math.random() * 18,
+        drift: 0.18 + Math.random() * 0.65,
+      }))
+    }
+
+    const render = (time) => {
+      const elapsed = time - startTime
+      const centerX = width / 2
+      const centerY = height / 2
+      context.clearRect(0, 0, width, height)
+
+      particles.forEach((particle) => {
+        particle.angle += particle.speed * (1 + 120 / particle.radius)
+        particle.radius -= particle.drift
+
+        if (particle.radius < 46) {
+          particle.radius = Math.max(width, height) * (0.5 + Math.random() * 0.3)
+          particle.alpha = 0.15 + Math.random() * 0.72
+        }
+
+        const flatten = 0.28 + Math.min(particle.radius / 1100, 0.22)
+        const x =
+          centerX +
+          Math.cos(particle.angle) * particle.radius +
+          Math.sin(elapsed * 0.0003) * 2
+        const y =
+          centerY + Math.sin(particle.angle) * particle.radius * flatten
+        const streak = Math.min(8, 120 / particle.radius)
+        const previousX =
+          centerX + Math.cos(particle.angle - particle.speed * streak) * particle.radius
+        const previousY =
+          centerY +
+          Math.sin(particle.angle - particle.speed * streak) *
+            particle.radius *
+            flatten
+
+        const gradient = context.createLinearGradient(previousX, previousY, x, y)
+        gradient.addColorStop(0, `hsla(${particle.hue}, 72%, 65%, 0)`)
+        gradient.addColorStop(
+          1,
+          `hsla(${particle.hue}, 85%, 72%, ${particle.alpha})`,
+        )
+        context.beginPath()
+        context.moveTo(previousX, previousY)
+        context.lineTo(x, y)
+        context.lineWidth = particle.size
+        context.strokeStyle = gradient
+        context.stroke()
+      })
+
+      frame = window.requestAnimationFrame(render)
+    }
+
+    resize()
+    window.addEventListener('resize', resize)
+    frame = window.requestAnimationFrame(render)
+
+    return () => {
+      window.clearTimeout(timer)
+      window.cancelAnimationFrame(frame)
+      window.removeEventListener('resize', resize)
+    }
+  }, [onComplete])
+
+  return (
+    <div className="black-hole-intro" role="dialog" aria-label="因变量科技开场动画">
+      <canvas ref={canvasRef} className="intro-stars" aria-hidden="true" />
+      <div className="intro-vignette" aria-hidden="true" />
+
+      <div className="black-hole-system" aria-hidden="true">
+        <div className="accretion-haze" />
+        <div className="accretion-disk disk-back" />
+        <div className="event-horizon">
+          <div className="black-hole-core" />
+        </div>
+        <div className="accretion-disk disk-front" />
+        <div className="photon-ring" />
+      </div>
+
+      <div className="intro-brand">
+        <p className="intro-eyebrow">INVARIABLE TECHNOLOGY</p>
+        <h1>因变量科技</h1>
+        <p className="intro-signal">正在进入变量场域</p>
+      </div>
+
+      <div className="intro-progress" aria-hidden="true">
+        <span />
+      </div>
+
+      <button type="button" className="intro-skip" onClick={onComplete}>
+        跳过动画 <span>↗</span>
+      </button>
+    </div>
+  )
+}
+
 function LiquidGlassCard() {
   return (
     <aside className="liquid-card h-[200px] w-[200px] translate-y-[-50px] p-5">
@@ -422,16 +562,18 @@ function Footer() {
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [introDone, setIntroDone] = useState(false)
 
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? 'hidden' : ''
+    document.body.style.overflow = menuOpen || !introDone ? 'hidden' : ''
     return () => {
       document.body.style.overflow = ''
     }
-  }, [menuOpen])
+  }, [menuOpen, introDone])
 
   return (
     <div id="top" className="bg-ink font-inter text-white">
+      {!introDone && <BlackHoleIntro onComplete={() => setIntroDone(true)} />}
       <section className="relative min-h-screen overflow-hidden">
         <VideoBackground />
         <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/75 to-transparent" />
