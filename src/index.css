@@ -101,9 +101,8 @@ a {
   overflow: hidden;
   display: grid;
   place-items: center;
-  background:
-    radial-gradient(circle at 50% 50%, #07110e 0%, #020504 44%, #000 76%);
-  animation: intro-collapse 1s cubic-bezier(0.76, 0, 0.24, 1) 3.65s forwards;
+  background: #000;
+  animation: intro-collapse 0.8s cubic-bezier(0.76, 0, 0.24, 1) 5.05s forwards;
 }
 
 .intro-stars,
@@ -115,16 +114,28 @@ a {
 }
 
 .intro-stars {
+  z-index: 1;
   opacity: 0;
-  animation: stars-arrive 1.2s ease-out 0.15s forwards;
+  animation: stars-arrive 1.2s ease-out 0.1s forwards;
+}
+
+.intro-black-hole-image {
+  position: absolute;
+  inset: -2%;
+  z-index: 2;
+  background: url('/images/black-hole-cinematic.png') center center / cover no-repeat;
+  opacity: 0;
+  transform: scale(0.07);
+  will-change: transform, opacity, filter;
+  animation: cinematic-camera-push 5.7s cubic-bezier(0.5, 0, 0.18, 1) forwards;
 }
 
 .intro-vignette {
   z-index: 4;
   pointer-events: none;
   background:
-    radial-gradient(circle at center, transparent 5%, rgba(0, 0, 0, 0.15) 36%, #000 90%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.45), transparent 30%, transparent 70%, rgba(0, 0, 0, 0.7));
+    radial-gradient(circle at center, transparent 12%, rgba(0, 0, 0, 0.08) 45%, #000 105%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.38), transparent 28%, transparent 72%, rgba(0, 0, 0, 0.76));
 }
 
 .black-hole-system {
@@ -234,23 +245,15 @@ a {
 .intro-brand {
   position: absolute;
   left: 50%;
-  top: calc(50% + min(25vw, 245px));
+  top: auto;
+  bottom: 22px;
   z-index: 6;
   width: min(90vw, 680px);
-  transform: translate(-50%, 24px);
+  transform: translate(-50%, 10px);
   text-align: center;
   opacity: 0;
-  filter: blur(16px);
-  animation: brand-focus 1.2s cubic-bezier(0.16, 1, 0.3, 1) 1.55s forwards;
-}
-
-.intro-brand h1 {
-  margin: 7px 0 0;
-  font-size: clamp(27px, 4vw, 48px);
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-indent: 0.18em;
-  text-shadow: 0 0 32px rgba(94, 210, 156, 0.23);
+  filter: blur(8px);
+  animation: brand-focus 1s cubic-bezier(0.16, 1, 0.3, 1) 2.4s forwards;
 }
 
 .intro-eyebrow,
@@ -262,34 +265,12 @@ a {
 }
 
 .intro-eyebrow {
-  color: #5ed29c;
+  color: rgba(255, 221, 171, 0.7);
 }
 
 .intro-signal {
   margin-top: 13px;
   color: rgba(255, 255, 255, 0.38);
-}
-
-.intro-progress {
-  position: absolute;
-  bottom: 36px;
-  left: 50%;
-  z-index: 7;
-  width: min(230px, 48vw);
-  height: 1px;
-  transform: translateX(-50%);
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.intro-progress span {
-  display: block;
-  width: 100%;
-  height: 100%;
-  transform: translateX(-100%);
-  background: #5ed29c;
-  box-shadow: 0 0 10px #5ed29c;
-  animation: intro-loading 3.5s cubic-bezier(0.65, 0, 0.35, 1) 0.2s forwards;
 }
 
 .intro-skip {
@@ -313,9 +294,41 @@ a {
 }
 
 .intro-skip:hover {
-  color: #5ed29c;
-  border-color: rgba(94, 210, 156, 0.5);
-  background: rgba(94, 210, 156, 0.05);
+  color: #ffd9a0;
+  border-color: rgba(255, 190, 100, 0.5);
+  background: rgba(255, 190, 100, 0.05);
+}
+
+@keyframes cinematic-camera-push {
+  0% {
+    opacity: 0;
+    transform: scale(0.07);
+    filter: brightness(0.45) blur(5px);
+  }
+  12% {
+    opacity: 1;
+    filter: brightness(0.68) blur(1px);
+  }
+  42% {
+    opacity: 1;
+    transform: scale(0.34);
+    filter: brightness(0.82) blur(0);
+  }
+  76% {
+    opacity: 1;
+    transform: scale(0.92);
+    filter: brightness(0.96) blur(0);
+  }
+  86% {
+    opacity: 1;
+    transform: scale(1.08);
+    filter: brightness(1.08) blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(5.8);
+    filter: brightness(1.35) blur(2px);
+  }
 }
 
 @keyframes black-hole-arrive {
@@ -377,12 +390,6 @@ a {
   }
 }
 
-@keyframes intro-loading {
-  to {
-    transform: translateX(0);
-  }
-}
-
 @keyframes intro-collapse {
   0% {
     opacity: 1;
@@ -407,7 +414,7 @@ a {
   }
 
   .intro-brand {
-    top: calc(50% + 33vw);
+    bottom: 22px;
   }
 
   .intro-skip {

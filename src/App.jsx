@@ -158,7 +158,7 @@ function BlackHoleIntro({ onComplete }) {
     const reducedMotion = window.matchMedia(
       '(prefers-reduced-motion: reduce)',
     ).matches
-    const duration = reducedMotion ? 700 : 4600
+    const duration = reducedMotion ? 700 : 5900
     const timer = window.setTimeout(onComplete, duration)
 
     if (reducedMotion) {
@@ -174,7 +174,7 @@ function BlackHoleIntro({ onComplete }) {
     let frame
     let width = window.innerWidth
     let height = window.innerHeight
-    let particles = []
+    let stars = []
     const startTime = performance.now()
 
     const resize = () => {
@@ -187,63 +187,196 @@ function BlackHoleIntro({ onComplete }) {
       canvas.style.height = `${height}px`
       context.setTransform(ratio, 0, 0, ratio, 0, 0)
 
-      const count = Math.min(900, Math.floor((width * height) / 1400))
-      const outerRadius = Math.max(width, height) * 0.72
-      particles = Array.from({ length: count }, (_, index) => ({
-        angle: Math.random() * Math.PI * 2,
-        radius: 80 + Math.pow(Math.random(), 0.55) * outerRadius,
-        speed: 0.0015 + Math.random() * 0.006,
-        size: 0.35 + Math.random() * 1.55,
-        alpha: 0.15 + Math.random() * 0.72,
-        hue: index % 7 === 0 ? 151 : 175 + Math.random() * 18,
-        drift: 0.18 + Math.random() * 0.65,
+      const count = Math.min(680, Math.floor((width * height) / 1800))
+      stars = Array.from({ length: count }, (_, index) => ({
+        x: (Math.random() - 0.5) * 2.3,
+        y: (Math.random() - 0.5) * 2.3,
+        depth: 0.32 + Math.random() * 1.5,
+        size: 0.3 + Math.random() * 1.1,
+        alpha: 0.15 + Math.random() * 0.58,
+        warm: index % 5 === 0,
       }))
     }
 
+    const smoothstep = (value) => value * value * (3 - 2 * value)
+
     const render = (time) => {
       const elapsed = time - startTime
+      const progress = Math.min(elapsed / 5800, 1)
+      const approach = smoothstep(Math.min(progress / 0.78, 1))
+      const plunge = Math.max((progress - 0.78) / 0.22, 0)
+      const cameraScale = 0.11 + approach * 0.94 + Math.pow(plunge, 3) * 6.2
       const centerX = width / 2
-      const centerY = height / 2
+      const centerY = height * 0.49
+      const baseRadius = Math.min(width, height) * 0.205
+      const radius = baseRadius * cameraScale
       context.clearRect(0, 0, width, height)
 
-      particles.forEach((particle) => {
-        particle.angle += particle.speed * (1 + 120 / particle.radius)
-        particle.radius -= particle.drift
+      const background = context.createRadialGradient(
+        centerX,
+        centerY,
+        0,
+        centerX,
+        centerY,
+        Math.max(width, height) * 0.8,
+      )
+      background.addColorStop(0, 'rgba(24, 12, 3, 0.52)')
+      background.addColorStop(0.38, 'rgba(8, 4, 1, 0.48)')
+      background.addColorStop(1, '#010101')
+      context.fillStyle = background
+      context.fillRect(0, 0, width, height)
 
-        if (particle.radius < 46) {
-          particle.radius = Math.max(width, height) * (0.5 + Math.random() * 0.3)
-          particle.alpha = 0.15 + Math.random() * 0.72
-        }
+      stars.forEach((star) => {
+        const projection = (0.5 + approach * 1.7 + plunge * 8) / star.depth
+        const x = centerX + star.x * width * projection
+        const y = centerY + star.y * height * projection
+        if (x < -20 || x > width + 20 || y < -20 || y > height + 20) return
 
-        const flatten = 0.28 + Math.min(particle.radius / 1100, 0.22)
-        const x =
-          centerX +
-          Math.cos(particle.angle) * particle.radius +
-          Math.sin(elapsed * 0.0003) * 2
-        const y =
-          centerY + Math.sin(particle.angle) * particle.radius * flatten
-        const streak = Math.min(8, 120 / particle.radius)
-        const previousX =
-          centerX + Math.cos(particle.angle - particle.speed * streak) * particle.radius
-        const previousY =
-          centerY +
-          Math.sin(particle.angle - particle.speed * streak) *
-            particle.radius *
-            flatten
-
-        const gradient = context.createLinearGradient(previousX, previousY, x, y)
-        gradient.addColorStop(0, `hsla(${particle.hue}, 72%, 65%, 0)`)
-        gradient.addColorStop(
-          1,
-          `hsla(${particle.hue}, 85%, 72%, ${particle.alpha})`,
-        )
+        const streak = plunge * 42
+        const angle = Math.atan2(y - centerY, x - centerX)
         context.beginPath()
-        context.moveTo(previousX, previousY)
+        context.moveTo(x - Math.cos(angle) * streak, y - Math.sin(angle) * streak)
         context.lineTo(x, y)
-        context.lineWidth = particle.size
-        context.strokeStyle = gradient
+        context.lineWidth = star.size * (1 + plunge * 1.4)
+        context.strokeStyle = star.warm
+          ? `rgba(255, 183, 92, ${star.alpha})`
+          : `rgba(235, 229, 218, ${star.alpha * 0.68})`
         context.stroke()
       })
+
+      frame = window.requestAnimationFrame(render)
+      return
+
+      context.save()
+      context.translate(centerX, centerY)
+      context.rotate(-0.09)
+
+      const drawOrbit = (scale, alpha, lineWidth) => {
+        context.beginPath()
+        context.ellipse(0, 0, radius * scale, radius * scale * 0.58, 0, 0, Math.PI * 2)
+        context.strokeStyle = `rgba(94, 210, 156, ${alpha})`
+        context.lineWidth = Math.max(0.6, radius * lineWidth)
+        context.shadowColor = 'rgba(94, 210, 156, 0.45)'
+        context.shadowBlur = radius * 0.08
+        context.stroke()
+      }
+
+      drawOrbit(2.6, 0.055, 0.012)
+      drawOrbit(2.15, 0.08, 0.01)
+      drawOrbit(1.6, 0.12, 0.008)
+      context.restore()
+
+      context.save()
+      context.lineCap = 'round'
+      context.shadowColor = 'rgba(94, 210, 156, 0.75)'
+      context.shadowBlur = Math.max(8, radius * 0.12)
+      const ribbonGradient = context.createLinearGradient(
+        centerX - radius,
+        centerY,
+        centerX + radius,
+        centerY,
+      )
+      ribbonGradient.addColorStop(0, 'rgba(18, 78, 56, 0.08)')
+      ribbonGradient.addColorStop(0.48, 'rgba(94, 210, 156, 0.2)')
+      ribbonGradient.addColorStop(0.54, 'rgba(185, 255, 223, 0.55)')
+      ribbonGradient.addColorStop(1, 'rgba(18, 78, 56, 0.05)')
+      context.strokeStyle = ribbonGradient
+      context.lineWidth = Math.max(2, radius * 0.16)
+      context.beginPath()
+      context.moveTo(centerX + radius * 0.62, centerY - height * 0.72)
+      context.bezierCurveTo(
+        centerX + radius * 0.42,
+        centerY - radius * 1.4,
+        centerX + radius * 0.12,
+        centerY - radius * 0.25,
+        centerX,
+        centerY,
+      )
+      context.bezierCurveTo(
+        centerX - radius * 0.12,
+        centerY + radius * 0.25,
+        centerX - radius * 0.42,
+        centerY + radius * 1.4,
+        centerX - radius * 0.62,
+        centerY + height * 0.72,
+      )
+      context.stroke()
+      context.restore()
+
+      const corona = context.createRadialGradient(
+        centerX,
+        centerY,
+        radius * 0.76,
+        centerX,
+        centerY,
+        radius * 1.35,
+      )
+      corona.addColorStop(0, 'rgba(0, 0, 0, 0)')
+      corona.addColorStop(0.5, 'rgba(0, 0, 0, 0)')
+      corona.addColorStop(0.72, 'rgba(161, 255, 215, 0.58)')
+      corona.addColorStop(0.78, 'rgba(94, 210, 156, 0.18)')
+      corona.addColorStop(1, 'rgba(94, 210, 156, 0)')
+      context.fillStyle = corona
+      context.beginPath()
+      context.arc(centerX, centerY, radius * 1.36, 0, Math.PI * 2)
+      context.fill()
+
+      const core = context.createRadialGradient(
+        centerX - radius * 0.2,
+        centerY - radius * 0.22,
+        radius * 0.04,
+        centerX,
+        centerY,
+        radius,
+      )
+      core.addColorStop(0, '#020706')
+      core.addColorStop(0.72, '#000101')
+      core.addColorStop(1, '#000')
+      context.fillStyle = core
+      context.beginPath()
+      context.arc(centerX, centerY, radius, 0, Math.PI * 2)
+      context.fill()
+
+      context.save()
+      context.beginPath()
+      context.arc(centerX, centerY, radius * 0.99, 0, Math.PI * 2)
+      context.clip()
+      const lensGradient = context.createLinearGradient(
+        centerX - radius * 0.04,
+        centerY,
+        centerX + radius * 0.42,
+        centerY,
+      )
+      lensGradient.addColorStop(0, 'rgba(211, 255, 237, 0.78)')
+      lensGradient.addColorStop(0.26, 'rgba(94, 210, 156, 0.22)')
+      lensGradient.addColorStop(1, 'rgba(94, 210, 156, 0)')
+      context.fillStyle = lensGradient
+      context.shadowColor = 'rgba(199, 255, 232, 0.8)'
+      context.shadowBlur = radius * 0.08
+      context.beginPath()
+      context.moveTo(centerX - radius * 0.02, centerY)
+      context.quadraticCurveTo(
+        centerX + radius * 0.16,
+        centerY - radius * 0.13,
+        centerX + radius * 0.5,
+        centerY - radius * 0.03,
+      )
+      context.quadraticCurveTo(
+        centerX + radius * 0.16,
+        centerY + radius * 0.13,
+        centerX - radius * 0.02,
+        centerY,
+      )
+      context.fill()
+      context.restore()
+
+      context.beginPath()
+      context.arc(centerX, centerY, radius * 1.035, 0, Math.PI * 2)
+      context.strokeStyle = 'rgba(190, 255, 226, 0.82)'
+      context.lineWidth = Math.max(0.8, radius * 0.012)
+      context.shadowColor = '#5ed29c'
+      context.shadowBlur = radius * 0.12
+      context.stroke()
 
       frame = window.requestAnimationFrame(render)
     }
@@ -262,26 +395,11 @@ function BlackHoleIntro({ onComplete }) {
   return (
     <div className="black-hole-intro" role="dialog" aria-label="因变量科技开场动画">
       <canvas ref={canvasRef} className="intro-stars" aria-hidden="true" />
+      <div className="intro-black-hole-image" aria-hidden="true" />
       <div className="intro-vignette" aria-hidden="true" />
-
-      <div className="black-hole-system" aria-hidden="true">
-        <div className="accretion-haze" />
-        <div className="accretion-disk disk-back" />
-        <div className="event-horizon">
-          <div className="black-hole-core" />
-        </div>
-        <div className="accretion-disk disk-front" />
-        <div className="photon-ring" />
-      </div>
 
       <div className="intro-brand">
         <p className="intro-eyebrow">INVARIABLE TECHNOLOGY</p>
-        <h1>因变量科技</h1>
-        <p className="intro-signal">正在进入变量场域</p>
-      </div>
-
-      <div className="intro-progress" aria-hidden="true">
-        <span />
       </div>
 
       <button type="button" className="intro-skip" onClick={onComplete}>
