@@ -62,3 +62,11 @@ a {
   mask-composite: exclude;
   pointer-events: none;
 }
+
+.liquid-glass-light {
+  background: rgba(11, 13, 14, 0.72);
+}
+
+select option {
+  color: #0b0d0e;
+}
